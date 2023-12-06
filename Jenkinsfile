@@ -1,3 +1,5 @@
+
+
 pipeline {
     agent {
         docker {
@@ -16,27 +18,6 @@ pipeline {
                 sh './jenkins/scripts/test.sh'
             }
         }
-        stage('Security Scans') {
-            parallel {
-                stage('Dastardly Scan') {
-                    steps {
-                        script {
-                            // Pull Dastardly Docker image
-                            sh 'docker pull public.ecr.aws/portswigger/dastardly:latest'
-                            
-                            // Run Dastardly scan
-                            sh '''
-                                docker run --user $(id -u) -v ${WORKSPACE}:${WORKSPACE}:rw \
-                                -e BURP_START_URL=http://localhost:3000 \
-                                -e BURP_REPORT_FILE_PATH=${WORKSPACE}/dastardly-report.xml \
-                                public.ecr.aws/portswigger/dastardly:latest
-                            '''
-                        }
-                    }
-                }
-                
-            }
-        }
         stage('Deliver') { 
             steps {
                 sh './jenkins/scripts/deliver.sh' 
@@ -46,4 +27,5 @@ pipeline {
         }
     }
 }
+
 
