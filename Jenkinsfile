@@ -21,11 +21,20 @@ pipeline {
                 stage('Dastardly Scan') {
                     steps {
                         script {
-                            // Run Dastardly scan here
-                            sh './jenkins/scripts/dastardly.sh'
+                            // Pull Dastardly Docker image
+                            sh 'docker pull public.ecr.aws/portswigger/dastardly:latest'
+                            
+                            // Run Dastardly scan
+                            sh '''
+                                docker run --user $(id -u) -v ${WORKSPACE}:${WORKSPACE}:rw \
+                                -e BURP_START_URL=http://localhost:3000 \
+                                -e BURP_REPORT_FILE_PATH=${WORKSPACE}/dastardly-report.xml \
+                                public.ecr.aws/portswigger/dastardly:latest
+                            '''
                         }
                     }
                 }
+                
             }
         }
         stage('Deliver') { 
