@@ -26,11 +26,6 @@ pipeline {
                         }
                     }
                 }
-                stage('Other Security Scans') {
-                    steps {
-                        // Add other security scans here
-                    }
-                }
             }
         }
         stage('Deliver') { 
